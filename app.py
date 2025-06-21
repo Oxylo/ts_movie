@@ -143,5 +143,5 @@ def update_graphs(frame, upper_plot_value):
     return upper_fig, sine_fig
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)
 
