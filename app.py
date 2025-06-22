@@ -157,6 +157,16 @@ def update_graphs(frame, upper_plot_value):
 
     sine_fig = px.line(stacked, x="nr", y="value", color="indicator")
 
+    sine_fig.update_layout(
+        legend=dict(
+            x=0.01,
+            y=0.99,
+            bgcolor='rgba(255,255,255,0.5)',
+            bordercolor='black',
+            borderwidth=1
+        )
+    )
+
     return upper_fig, sine_fig
 
 if __name__ == '__main__':
