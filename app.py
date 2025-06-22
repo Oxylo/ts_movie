@@ -10,6 +10,31 @@ from utils_animation import read_ohlc
 from plotly.subplots import make_subplots
 from utils_animation import get_frame
 
+ts_tickers = ['1INCHUSDT', 'AAVEUSDT', 'ADAUSDT', 'ALGOUSDT', 'ALICEUSDT', 'ALPHAUSDT', 'ANKRUSDT', 'ARDRUSDT',
+              'ARUSDT', 'ATOMUSDT', 'AUDIOUSDT', 'AVAXUSDT', 'AXSUSDT', 'BADGERUSDT', 'BAKEUSDT', 'BANDUSDT',
+              'BATUSDT', 'BCHUSDT', 'BNBUSDT', 'BNTUSDT', 'BTCSTUSDT', 'BTCUSDT', 'BTGUSDT', 'BTTUSDT',
+              'BUSDUSDT', 'CAKEUSDT', 'CELOUSDT', 'CELRUSDT', 'CFXUSDT', 'CHZUSDT', 'CKBUSDT', 'COMPUSDT',
+              'COTIUSDT', 'CRVUSDT', 'CTSIUSDT', 'CVCUSDT', 'DAIUSDT', 'DASHUSDT', 'DCRUSDT', 'DENTUSDT',
+              'DGBUSDT', 'DOGEUSDT', 'DOTUSDT', 'DYDXUSDT', 'EGLDUSDT', 'ELFUSDT', 'ENJUSDT', 'EOSUSDT',
+              'ETCUSDT', 'ETHUSDT', 'EURUSDT', 'FETUSDT', 'FILUSDT', 'FLOWUSDT', 'FTMUSDT', 'FTTUSDT',
+              'FUNUSDT', 'GBPUSDT', 'GNOUSDT', 'GRTUSDT', 'HBARUSDT', 'HIVEUSDT', 'HNTUSDT', 'HOTUSDT',
+              'ICPUSDT', 'ICXUSDT', 'INJUSDT', 'IOSTUSDT', 'IOTAUSDT', 'IOTXUSDT', 'JUVUSDT', 'KAVAUSDT',
+              'KLAYUSDT', 'KSMUSDT', 'LINKUSDT', 'LPTUSDT', 'LRCUSDT', 'LSKUSDT', 'LTCUSDT', 'LUNAUSDT',
+              'MANAUSDT', 'MATICUSDT', 'MDXUSDT', 'MINAUSDT', 'MKRUSDT', 'MLNUSDT', 'MTLUSDT', 'NANOUSDT',
+              'NEARUSDT', 'NEOUSDT', 'NKNUSDT', 'NMRUSDT', 'NUUSDT', 'OCEANUSDT', 'OGNUSDT', 'OMGUSDT',
+              'ONEUSDT', 'ONGUSDT', 'ONTUSDT', 'OXTUSDT', 'PAXGUSDT', 'PERPUSDT', 'POLYUSDT', 'QNTUSDT',
+              'QTUMUSDT', 'RANDOM_1', 'RANDOM_2', 'RANDOM_3', 'RAYUSDT', 'REEFUSDT', 'RENUSDT', 'REPUSDT',
+              'RLCUSDT', 'ROSEUSDT', 'RSRUSDT',
+              'RUNEUSDT', 'RVNUSDT', 'SANDUSDT', 'SCUSDT', 'SHIBUSDT', 'SKLUSDT', 'SNXUSDT', 'SOLUSDT',
+              'SRMUSDT', 'STMXUSDT', 'STORJUSDT', 'STRAXUSDT', 'STXUSDT', 'SUSHIUSDT', 'SXPUSDT', 'TFUELUSDT',
+              'THETAUSDT', 'TOMOUSDT', 'TRXUSDT', 'TUSDUSDT', 'UMAUSDT', 'UNIUSDT', 'USDCUSDT', 'USDPUSDT',
+              'VETUSDT', 'VTHOUSDT', 'WAVESUSDT', 'WAXPUSDT', 'WINUSDT', 'WRXUSDT', 'XECUSDT', 'XEMUSDT',
+              'XLMUSDT', 'XRPUSDT', 'XTZUSDT', 'XVGUSDT', 'XVSUSDT', 'YFIUSDT', 'ZECUSDT', 'ZENUSDT',
+              'ZILUSDT', 'ZRXUSDT']
+
+options = [{"label": item if item in ("RANDOM_1", "RANDOM_2", "RANDOM_3") else item[:-4], "value": item} for item in ts_tickers]
+
+
 app = Dash(__name__)
 
 server = app.server
@@ -17,11 +42,8 @@ server = app.server
 app.layout = html.Div([
     dcc.Dropdown(
         id='upper-plot-select',
-        options=[
-            {'label': 'BTC', 'value': 'BTCUSDT'},
-            {'label': 'ETH', 'value': 'ETHUSDT'}
-        ],
-        value='BTCUSDT',
+        options=options,
+        value='BTCUSDT',  # default value for drop down menu
         clearable=False,
         style={'width': '200px', 'marginBottom': '20px'}
     ),
@@ -138,22 +160,6 @@ def update_graphs(frame, upper_plot_value):
     current_frame = get_frame(all_frames, frame)
 
     stacked = current_frame.stack().to_frame().reset_index().rename(columns={"level_0": "nr", "level_1": "indicator", 0: "value"})
- 
-    sine_fig = {
-        'data': [{
-            'x': x,
-            'y': y_sin,
-            'type': 'line',
-            'mode': 'lines',
-            'line': {'color': 'blue'}
-        }],
-        'layout': {
-            'title': 'Animated ETH Wave (Bottom Plot)',
-            'xaxis': {'range': [0, 2 * np.pi]},
-            'yaxis': {'range': [-1.5, 1.5]},
-            'transition': {'duration': 0}
-        }
-    }
 
     sine_fig = px.line(stacked, x="nr", y="value", color="indicator")
 
