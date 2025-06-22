@@ -14,8 +14,6 @@ app = Dash(__name__)
 
 server = app.server
 
-max_frame = 2694  # TO DO : MAKE DYNAMIC 
-
 app.layout = html.Div([
     dcc.Dropdown(
         id='upper-plot-select',
@@ -41,10 +39,9 @@ app.layout = html.Div([
     dcc.Slider(
         id='frame-slider',
         min=0,
-        max=max_frame,
+        max=100,  # Fallback initial max
         value=0,
         step=1,
-        marks={i: str(i) for i in range(0, max_frame+1, 200)},
         updatemode='drag'
     ),
 
@@ -61,6 +58,7 @@ app.layout = html.Div([
 # When Pause is clicked → returns True to disable the Interval (stop the timer, so animation pauses).
 # Otherwise, keeps the current disabled state.
 #
+
 
 @app.callback(
     Output('interval-component', 'disabled'),
@@ -80,12 +78,31 @@ def play_pause(play_clicks, pause_clicks, disabled):
     return disabled
 
 @app.callback(
+    Output('frame-slider', 'max'),
+    Output('frame-slider', 'marks'),
+    Input('upper-plot-select', 'value')
+)
+def update_slider_max(upper_plot_value):
+    data = read_ohlc(full_path=f"data/{upper_plot_value}-D-data.csv")
+    max_frame = data.shape[0] - 1
+    marks = {i: str(i) for i in range(0, max_frame + 1, 200)}
+    return max_frame, marks
+
+
+@app.callback(
     Output('frame-slider', 'value'),
     Input('interval-component', 'n_intervals'),
     State('frame-slider', 'value'),
+    State('frame-slider', 'max'),
 )
-def update_slider(n_intervals, slider_value):
-    if slider_value >= max_frame:
+def update_slider(n_intervals, slider_value, max_value):
+    # Guard against uninitialized max_value:
+    # max_value is None when the update_slider callback is triggered before update_slider_max has set the
+    # frame-slider's max value.
+    if max_value is None or slider_value is None:
+        return 0
+
+    if slider_value >= max_value:
         return 0
     return slider_value + 1
 
