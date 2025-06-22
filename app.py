@@ -61,7 +61,7 @@ app.layout = html.Div([
     dcc.Slider(
         id='frame-slider',
         min=0,
-        max=100,  # Fallback initial max
+        # max=100,  # Fallback initial max
         value=0,
         step=1,
         updatemode='drag'
